@@ -33,11 +33,14 @@ This function should only modify configuration layer settings."
 
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
-   '(
+   '(lua
      (go :variables
          ;; go-use-gometalinter t
+         go-tab-width 4
          gofmt-command "goimports")
      html
+     protobuf
+     ;; (colors :variables colors-enable-nyan-cat-progress-bar t)
      ;; ----------------------------------------------------------------
      ;; Example of useful layers you may want to use right away.
      ;; Uncomment some layer names and press `SPC f e R' (Vim style) or
@@ -46,7 +49,7 @@ This function should only modify configuration layer settings."
      (markdown :variables
                markdown-live-preview-engine 'vmd
                markdown-command "pandoc")
-     helm
+     ivy
      themes-megapack
      auto-completion
      (better-defaults :variables
@@ -60,10 +63,6 @@ This function should only modify configuration layer settings."
             shell-default-position 'bottom)
      ;; spell-checking
      syntax-checking
-     (version-control :variables
-                      version-control-diff-tool 'diff-hl
-                      version-control-diff-side 'left
-                      version-control-global-margin t)
      )
 
    ;; List of additional packages that will be installed without being
@@ -74,6 +73,7 @@ This function should only modify configuration layer settings."
    ;; '(your-package :location "~/path/to/your-package/")
    ;; Also include the dependencies as they will not be resolved automatically.
    dotspacemacs-additional-packages '(
+                                      nyan-mode
                                       flycheck-posframe
                                       beacon
                                       all-the-icons-dired
@@ -213,7 +213,7 @@ It should only modify the values of Spacemacs settings."
    ;; to create your own spaceline theme. Value can be a symbol or list with\
    ;; additional properties.
    ;; (default '(spacemacs :separator wave :separator-scale 1.5))
-   dotspacemacs-mode-line-theme '(spacemacs :separator wave :separator-scale 1.5)
+   dotspacemacs-mode-line-theme '(spacemacs :separator arrow :separator-scale 1.5)
 
    ;; If non-nil the cursor color matches the state color in GUI Emacs.
    ;; (default t)
@@ -476,16 +476,43 @@ This function is called at the very end of Spacemacs startup, after layer
 configuration.
 Put your configuration code here, except for variables that should be set
 before packages are loaded."
+  "useful key binding for copy and paste"
+  (define-key evil-normal-state-map (kbd "C-, y") 'copy-word)
+  (define-key evil-normal-state-map (kbd "C-, p") 'cover-word)
+  (define-key evil-normal-state-map (kbd "C-, d") 'delete-word)
+  (defun copy-word ()
+    "copy current word."
+    (interactive)
+    (kill-new (thing-at-point 'word)))
+  (defun delete-word ()
+    "cover word before point"
+    (interactive)
+    (save-excursion
+      (let ((end (get-point 'forward-word 1))
+            (beg (get-point 'backward-word 1))
+            )
+        (delete-region beg end)
+        ))
+    )
+  (defun cover-word ()
+    "replace current word with kill-ring"
+    (interactive)
+    (delete-word)
+    (evil-paste-before 1)
+    )
+  (defun get-point (symbol &optional arg)
+    "get the point"
+    (funcall symbol arg)
+    (point)
+    )
+  "ivy search without ^"
+  (setq ivy-initial-inputs-alist nil)
   "exec-path-from-shell"
   (when (memq window-system '(mac ns x))
     (exec-path-from-shell-initialize))
   "vc mode line update"
   (setq auto-revert-check-vc-info t)
-  "diff hl"
-  (add-hook 'diff-hl-mode-hook (lambda()
-                                 (diff-hl-flydiff-mode '(:global t))
-                                 ))
-  "escape to quit and C-e to lien end"
+  "escape to quit and C-e to line end"
   (setcdr evil-insert-state-map nil)
   (define-key evil-insert-state-map [escape] 'evil-normal-state)
   (define-key evil-insert-state-map (kbd "C-e") 'mwim-end-of-code-or-line)
@@ -502,6 +529,7 @@ before packages are loaded."
   "neotree ignore file and icon"
   (setq neo-hidden-regexp-list '("^\\." "\\.cs\\.meta$" "\\.pyc$" "~$" "^#.*#$" "\\.elc$" "^bazel-.*" "vendor" "_output"))
   (setq neo-theme 'icons)
+  (setq neo-vc-integration '(face))
   "beacon config"
   (beacon-mode 1)
   (setq beacon-blink-when-point-moves-vertically nil) ; default nil
@@ -540,11 +568,11 @@ This function is called at the very end of Spacemacs initialization."
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(exec-path-from-shell git-gutter-fringe+ git-gutter-fringe fringe-helper git-gutter+ git-gutter diff-hl browse-at-remote web-mode web-beautify vmd-mode tagedit slim-mode scss-mode sass-mode pug-mode protobuf-mode impatient-mode simple-httpd helm-css-scss haml-mode flycheck-posframe posframe emmet-mode company-web web-completion-data all-the-icons-dired zenburn-theme zen-and-art-theme white-sand-theme underwater-theme ujelly-theme twilight-theme twilight-bright-theme twilight-anti-bright-theme toxi-theme tao-theme tangotango-theme tango-plus-theme tango-2-theme sunny-day-theme sublime-themes subatomic256-theme subatomic-theme spacegray-theme soothe-theme solarized-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme seti-theme reverse-theme rebecca-theme railscasts-theme purple-haze-theme professional-theme planet-theme phoenix-dark-pink-theme phoenix-dark-mono-theme organic-green-theme omtose-phellack-theme oldlace-theme occidental-theme obsidian-theme noctilux-theme naquadah-theme mustang-theme monokai-theme monochrome-theme molokai-theme moe-theme minimal-theme material-theme majapahit-theme madhat2r-theme lush-theme light-soap-theme kaolin-themes jbeans-theme jazz-theme ir-black-theme inkpot-theme heroku-theme hemisu-theme hc-zenburn-theme gruvbox-theme gruber-darker-theme grandshell-theme gotham-theme gandalf-theme flatui-theme flatland-theme farmhouse-theme eziam-theme exotica-theme espresso-theme dracula-theme doom-themes django-theme darktooth-theme autothemer darkokai-theme darkmine-theme darkburn-theme dakrone-theme cyberpunk-theme color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized clues-theme cherry-blossom-theme busybee-theme bubbleberry-theme birds-of-paradise-plus-theme badwolf-theme apropospriate-theme anti-zenburn-theme ample-zen-theme ample-theme alect-themes afternoon-theme beacon toml-mode racer helm-gtags ggtags flycheck-rust counsel-gtags cargo rust-mode yasnippet-snippets xterm-color unfill smeargle shell-pop orgit org-projectile org-category-capture org-present org-pomodoro alert log4e gntp org-mime org-download org-brain mwim multi-term mmm-mode markdown-toc markdown-mode magit-svn magit-gitflow htmlize helm-gitignore helm-company helm-c-yasnippet godoctor go-tag go-rename go-impl go-guru go-gen-test go-fill-struct go-eldoc gnuplot gitignore-templates gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link gh-md fuzzy flycheck-pos-tip pos-tip flycheck evil-org evil-magit magit magit-popup git-commit ghub with-editor eshell-z eshell-prompt-extras esh-help company-statistics company-go go-mode company auto-yasnippet yasnippet ac-ispell auto-complete ws-butler winum volatile-highlights vi-tilde-fringe uuidgen toc-org symon string-inflection spaceline-all-the-icons all-the-icons memoize spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode password-generator paradox spinner overseer org-bullets open-junk-file neotree nameless move-text macrostep lorem-ipsum link-hint indent-guide hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation helm-xref helm-themes helm-swoop helm-purpose window-purpose imenu-list helm-projectile helm-mode-manager helm-make helm-flx helm-descbinds helm-ag google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state iedit evil-goggles evil-exchange evil-escape evil-cleverparens smartparens paredit evil-args evil-anzu anzu eval-sexp-fu highlight elisp-slime-nav editorconfig dumb-jump f dash s define-word counsel-projectile projectile counsel swiper ivy pkg-info epl column-enforce-mode clean-aindent-mode centered-cursor-mode auto-highlight-symbol auto-compile packed aggressive-indent ace-window which-key use-package pcre2el org-plus-contrib hydra font-lock+ evil dotenv-mode diminish bind-map ace-link ace-jump-helm-line)))
+   '(helm-gtags ggtags counsel-gtags company-lua lua-mode nyan-mode zenburn-theme zen-and-art-theme yasnippet-snippets xterm-color ws-butler winum white-sand-theme which-key wgrep web-mode web-beautify volatile-highlights vmd-mode vi-tilde-fringe uuidgen use-package unfill underwater-theme ujelly-theme twilight-theme twilight-bright-theme twilight-anti-bright-theme toxi-theme toc-org tao-theme tangotango-theme tango-plus-theme tango-2-theme tagedit symon sunny-day-theme sublime-themes subatomic256-theme subatomic-theme string-inflection spaceline-all-the-icons spacegray-theme soothe-theme solarized-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme smex smeargle slim-mode shell-pop seti-theme scss-mode sass-mode reverse-theme restart-emacs request rebecca-theme rainbow-delimiters railscasts-theme purple-haze-theme pug-mode protobuf-mode professional-theme popwin planet-theme phoenix-dark-pink-theme phoenix-dark-mono-theme persp-mode pcre2el password-generator paradox overseer orgit organic-green-theme org-projectile org-present org-pomodoro org-mime org-download org-bullets org-brain open-junk-file omtose-phellack-theme oldlace-theme occidental-theme obsidian-theme noctilux-theme neotree naquadah-theme nameless mwim mustang-theme multi-term move-text monokai-theme monochrome-theme molokai-theme moe-theme mmm-mode minimal-theme material-theme markdown-toc majapahit-theme magit-svn magit-gitflow madhat2r-theme macrostep lush-theme lorem-ipsum link-hint light-soap-theme kaolin-themes jbeans-theme jazz-theme ivy-yasnippet ivy-xref ivy-purpose ivy-hydra ir-black-theme inkpot-theme indent-guide impatient-mode hungry-delete hl-todo highlight-parentheses highlight-numbers highlight-indentation heroku-theme hemisu-theme helm-make hc-zenburn-theme gruvbox-theme gruber-darker-theme grandshell-theme gotham-theme google-translate golden-ratio godoctor go-tag go-rename go-impl go-guru go-gen-test go-fill-struct go-eldoc gnuplot gitignore-templates gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link gh-md gandalf-theme fuzzy font-lock+ flycheck-posframe flycheck-pos-tip flx-ido flatui-theme flatland-theme fill-column-indicator farmhouse-theme fancy-battery eziam-theme eyebrowse expand-region exotica-theme exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-org evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-cleverparens evil-args evil-anzu eval-sexp-fu espresso-theme eshell-z eshell-prompt-extras esh-help emmet-mode elisp-slime-nav editorconfig dumb-jump dracula-theme dotenv-mode doom-themes django-theme diminish define-word darktooth-theme darkokai-theme darkmine-theme darkburn-theme dakrone-theme cyberpunk-theme counsel-projectile counsel-css company-web company-statistics company-go column-enforce-mode color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized clues-theme clean-aindent-mode cherry-blossom-theme centered-cursor-mode busybee-theme bubbleberry-theme birds-of-paradise-plus-theme beacon badwolf-theme auto-yasnippet auto-highlight-symbol auto-compile apropospriate-theme anti-zenburn-theme ample-zen-theme ample-theme all-the-icons-dired alect-themes aggressive-indent afternoon-theme ace-window ace-link ac-ispell)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(region ((t (:inherit highlight :background "disabledControlTextColor")))))
+ )
 )
