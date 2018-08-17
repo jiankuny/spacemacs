@@ -1,4 +1,4 @@
-;; -*- mode: emacs-lisp -*-
+;; -*- mode: emacs-lisp; lexical-binding: t -*-
 ;; This file is loaded by Spacemacs at startup.
 ;; It must be stored in your home directory.
 
@@ -33,36 +33,53 @@ This function should only modify configuration layer settings."
 
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
-   '(lua
-     (go :variables
-         ;; go-use-gometalinter t
-         go-tab-width 4
-         gofmt-command "goimports")
-     html
-     protobuf
-     ;; (colors :variables colors-enable-nyan-cat-progress-bar t)
+   '(
      ;; ----------------------------------------------------------------
      ;; Example of useful layers you may want to use right away.
      ;; Uncomment some layer names and press `SPC f e R' (Vim style) or
      ;; `M-m f e R' (Emacs style) to install them.
      ;; ----------------------------------------------------------------
-     (markdown :variables
-               markdown-live-preview-engine 'vmd
-               markdown-command "pandoc")
-     ivy
-     themes-megapack
-     auto-completion
-     (better-defaults :variables
-                      better-defaults-move-to-end-of-code-first t)
+     ;; deft
+     ;; gtags
+     (shell :variables shell-default-term-shell "/bin/zsh"
+            shell-default-full-span nil
+            shell-default-height 25
+            shell-default-position 'bottom)
+     speed-reading
+     restclient
+     (ranger :variables
+              ranger-show-preview t
+              ranger-cleanup-on-disable t
+              ranger-cleanup-eagerly t
+              ranger-width-preview 0.4
+              ranger-ignored-extensions '("mkv" "iso" "mp4")
+              ranger-max-preview-size 10)
+     imenu-list
+     (ibuffer :variables ibuffer-group-buffers-by 'projects)
+     helm
+     (auto-completion :variables auto-completion-tab-key-behavior 'cycle
+                      auto-completion-complete-with-key-sequence "jk"
+                      auto-completion-enable-snippets-in-popup t
+                      auto-completion-enable-sort-by-usage t
+                      )
+     (chinese :variables chinese-enable-youdao-dict t)
+     ;; language
+     (go :variables gofmt-command "goimports"
+         go-tab-width 4)
+     rust
+     (python :variables python-enable-yapf-format-on-save t
+             python-sort-imports-on-save t
+             python-test-runner '(pytest nose))
      emacs-lisp
      git
+     markdown
      neotree
-     org
-     (shell :variables
-            shell-default-height 30
-            shell-default-position 'bottom)
+     ;; org
      ;; spell-checking
      syntax-checking
+     (version-control :variables
+                      version-control-diff-tool 'git-gutter+
+                      version-control-global-margin t)
      )
 
    ;; List of additional packages that will be installed without being
@@ -73,13 +90,8 @@ This function should only modify configuration layer settings."
    ;; '(your-package :location "~/path/to/your-package/")
    ;; Also include the dependencies as they will not be resolved automatically.
    dotspacemacs-additional-packages '(
-                                      nyan-mode
-                                      flycheck-posframe
-                                      beacon
-                                      all-the-icons-dired
-                                      protobuf-mode
-                                      exec-path-from-shell
-                                      )
+                                      helm-dash
+                                      atom-one-dark-theme)
 
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
@@ -178,7 +190,7 @@ It should only modify the values of Spacemacs settings."
    ;; directory. A string value must be a path to an image format supported
    ;; by your Emacs build.
    ;; If the value is nil then no banner is displayed. (default 'official)
-   dotspacemacs-startup-banner 'official
+   dotspacemacs-startup-banner 'random
 
    ;; List of items to show in startup buffer or an association list of
    ;; the form `(list-type . list-size)`. If nil then it is disabled.
@@ -186,7 +198,8 @@ It should only modify the values of Spacemacs settings."
    ;; `recents' `bookmarks' `projects' `agenda' `todos'.
    ;; List sizes may be nil, in which case
    ;; `spacemacs-buffer-startup-lists-length' takes effect.
-   dotspacemacs-startup-lists '((projects . 5))
+   dotspacemacs-startup-lists '((recents . 7)
+                                (projects . 5))
 
    ;; True if the home buffer should respond to resize events. (default t)
    dotspacemacs-startup-buffer-responsive t
@@ -202,9 +215,9 @@ It should only modify the values of Spacemacs settings."
    ;; Press `SPC T n' to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
    dotspacemacs-themes '(
-                         monokai
+                         atom-one-dark
                          spacemacs-dark
-                         )
+                         spacemacs-light)
 
    ;; Set the theme for the Spaceline. Supported themes are `spacemacs',
    ;; `all-the-icons', `custom', `vim-powerline' and `vanilla'. The first three
@@ -213,7 +226,7 @@ It should only modify the values of Spacemacs settings."
    ;; to create your own spaceline theme. Value can be a symbol or list with\
    ;; additional properties.
    ;; (default '(spacemacs :separator wave :separator-scale 1.5))
-   dotspacemacs-mode-line-theme '(spacemacs :separator arrow :separator-scale 1.5)
+   dotspacemacs-mode-line-theme '(spacemacs :separator wave :separator-scale 1.5)
 
    ;; If non-nil the cursor color matches the state color in GUI Emacs.
    ;; (default t)
@@ -234,7 +247,7 @@ It should only modify the values of Spacemacs settings."
    dotspacemacs-emacs-command-key "SPC"
 
    ;; The key used for Vim Ex commands (default ":")
-   dotspacemacs-ex-command-key ";"
+   dotspacemacs-ex-command-key ":"
 
    ;; The leader key accessible in `emacs state' and `insert state'
    ;; (default "M-m")
@@ -292,7 +305,7 @@ It should only modify the values of Spacemacs settings."
 
    ;; Which-key delay in seconds. The which-key buffer is the popup listing
    ;; the commands bound to the current keystroke sequence. (default 0.4)
-   dotspacemacs-which-key-delay 0.4
+   dotspacemacs-which-key-delay 0.1
 
    ;; Which-key frame position. Possible values are `right', `bottom' and
    ;; `right-then-bottom'. right-then-bottom tries to display the frame to the
@@ -344,7 +357,7 @@ It should only modify the values of Spacemacs settings."
    ;; If non-nil unicode symbols are displayed in the mode line.
    ;; If you use Emacs as a daemon and wants unicode characters only in GUI set
    ;; the value to quoted `display-graphic-p'. (default t)
-   dotspacemacs-mode-line-unicode-symbols t
+   dotspacemacs-mode-line-unicode-symbols 'display-graphic-p
 
    ;; If non-nil smooth scrolling (native-scrolling) is enabled. Smooth
    ;; scrolling overrides the default behavior of Emacs which recenters point
@@ -364,7 +377,14 @@ It should only modify the values of Spacemacs settings."
    ;;                       text-mode
    ;;   :size-limit-kb 1000)
    ;; (default nil)
-   dotspacemacs-line-numbers t
+   dotspacemacs-line-numbers '(:relative nil
+                                         :disabled-for-modes dired-mode
+                                         doc-view-mode
+                                         markdown-mode
+                                         org-mode
+                                         pdf-view-mode
+                                         text-mode
+                                         :size-limit-kb 1000)
 
    ;; Code folding method. Possible values are `evil' and `origami'.
    ;; (default 'evil)
@@ -421,7 +441,7 @@ It should only modify the values of Spacemacs settings."
    ;; %z - mnemonics of buffer, terminal, and keyboard coding systems
    ;; %Z - like %z, but including the end-of-line format
    ;; (default "%I@%S")
-   dotspacemacs-frame-title-format "%I@%S"
+   dotspacemacs-frame-title-format "%a"
 
    ;; Format specification for setting the icon title format
    ;; (default nil - same as frame-title-format)
@@ -432,7 +452,7 @@ It should only modify the values of Spacemacs settings."
    ;; `trailing' to delete only the whitespace at end of lines, `changed' to
    ;; delete only whitespace for changed lines or `nil' to disable cleanup.
    ;; (default nil)
-   dotspacemacs-whitespace-cleanup nil
+   dotspacemacs-whitespace-cleanup 'trailing
 
    ;; Either nil or a number of seconds. If non-nil zone out after the specified
    ;; number of seconds. (default nil)
@@ -458,9 +478,20 @@ configuration.
 It is mostly for variables that should be set before packages are loaded.
 If you are unsure, try setting them in `dotspacemacs/user-config' first."
   (setq configuration-layer-elpa-archives
-        '(("melpa-cn" . "http://elpa.emacs-china.org/melpa/")
-          ("org-cn"   . "http://elpa.emacs-china.org/org/")
-          ("gnu-cn"   . "http://elpa.emacs-china.org/gnu/")))
+      '(("melpa-cn" . "http://elpa.emacs-china.org/melpa/")
+        ("org-cn"   . "http://elpa.emacs-china.org/org/")
+        ("gnu-cn"   . "http://elpa.emacs-china.org/gnu/")))
+  ;; natural title bar
+  (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
+  (add-to-list 'default-frame-alist '(ns-appearance . dark))
+  (if (fboundp 'tool-bar-mode)
+      (tool-bar-mode -1))
+  ;; 移除滚动条
+  (if (fboundp 'set-scroll-bar-mode)
+      (set-scroll-bar-mode nil))
+  ;; 移除菜单栏
+  (if (fboundp 'menu-bar-mode)
+      (menu-bar-mode -1))
   )
 
 (defun dotspacemacs/user-load ()
@@ -476,83 +507,26 @@ This function is called at the very end of Spacemacs startup, after layer
 configuration.
 Put your configuration code here, except for variables that should be set
 before packages are loaded."
-  "useful key binding for copy and paste"
-  (define-key evil-normal-state-map (kbd "C-, y") 'copy-word)
-  (define-key evil-normal-state-map (kbd "C-, p") 'cover-word)
-  (define-key evil-normal-state-map (kbd "C-, d") 'delete-word)
-  (defun copy-word ()
-    "copy current word."
-    (interactive)
-    (kill-new (thing-at-point 'word)))
-  (defun delete-word ()
-    "cover word before point"
-    (interactive)
-    (save-excursion
-      (let ((end (get-point 'forward-word 1))
-            (beg (get-point 'backward-word 1))
-            )
-        (delete-region beg end)
-        ))
-    )
-  (defun cover-word ()
-    "replace current word with kill-ring"
-    (interactive)
-    (delete-word)
-    (evil-paste-before 1)
-    )
-  (defun get-point (symbol &optional arg)
-    "get the point"
-    (funcall symbol arg)
-    (point)
-    )
-  "ivy search without ^"
-  (setq ivy-initial-inputs-alist nil)
-  "exec-path-from-shell"
-  (when (memq window-system '(mac ns x))
-    (exec-path-from-shell-initialize))
-  "vc mode line update"
-  (setq auto-revert-check-vc-info t)
-  "escape to quit and C-e to line end"
-  (setcdr evil-insert-state-map nil)
-  (define-key evil-insert-state-map [escape] 'evil-normal-state)
+  ;; (setq url-proxy-services   '(("no_proxy" . "^\\(localhost\\|10.*\\)")     ("http" . "http://127.0.0.1:1087")     ("https" . "http://127.0.0.1:1078")))
+  ;; C-e hack
+  (setq helm-dash-browser-func 'eww)
   (define-key evil-insert-state-map (kbd "C-e") 'mwim-end-of-code-or-line)
   (define-key evil-motion-state-map (kbd "C-e") 'mwim-end-of-code-or-line)
-  "flycheck pop tips and pretty"
-  (add-hook 'flycheck-mode-hook #'flycheck-posframe-mode)
-  (flycheck-posframe-configure-pretty-defaults)
-  (setq flycheck-highlighting-mode 'lines)
-  (setq flycheck-indication-mode 'right-fringe)
-  "dired icon"
-  (when (string= system-type "darwin")
-    (setq dired-use-ls-dired nil))
-  (add-hook 'dired-mode-hook 'all-the-icons-dired-mode)
-  "neotree ignore file and icon"
-  (setq neo-hidden-regexp-list '("^\\." "\\.cs\\.meta$" "\\.pyc$" "~$" "^#.*#$" "\\.elc$" "^bazel-.*" "vendor" "_output"))
-  (setq neo-theme 'icons)
-  (setq neo-vc-integration '(face))
-  "beacon config"
-  (beacon-mode 1)
-  (setq beacon-blink-when-point-moves-vertically nil) ; default nil
-  (setq beacon-blink-when-point-moves-horizontally nil) ; default nil
-  (setq beacon-blink-when-buffer-changes t) ; default t
-  (setq beacon-blink-when-window-scrolls t) ; default t
-  (setq beacon-blink-when-window-changes t) ; default t
-  (setq beacon-blink-when-focused nil) ; default nil
-  (setq beacon-blink-duration 0.3) ; default 0.3
-  (setq beacon-blink-delay 0.3) ; default 0.3
-  (setq beacon-size 90) ; default 40
-  (setq beacon-blinkdelay 0.2) ; default 0.3
-  (setq beacon-color "yellow") ; default 0.5
-  (add-to-list 'beacon-dont-blink-major-modes 'term-mode 'spacemacs-buffer-mode)
+  (define-key evil-visual-state-map (kbd "C-e") 'mwim-end-of-code-or-line)
 
-  "centerd cursor mode"
-  (define-global-minor-mode my-global-centered-cursor-mode centered-cursor-mode
-    (lambda ()
-      (when (not (memq major-mode
-                       (list 'Info-mode 'term-mode 'eshell-mode 'shell-mode 'erc-mode 'spacemacs-buffer-mode)))
-        (centered-cursor-mode))))
-  (my-global-centered-cursor-mode 1)
+  (setq magit-repository-directories '("~/go/src/go-common/"))
+  (global-git-commit-mode t)
+  (setq-default git-magit-status-fullscreen t)
+  ;; 输入法来回闪
+  (setq redisplay-dont-pause nil)
+  (when (spacemacs/system-is-mac)
+    (spacemacs//set-monospaced-font "Monaco" "Hiragino Sans GB" 14 16))
+  (global-set-key (kbd "C-s") 'helm-swoop)
+  (spacemacs/set-leader-keys "oy" 'youdao-dictionary-search-at-point+)
+  (spacemacs/set-leader-keys "os" 'youdao-dictionary-search-from-input)
 
+  (add-hook 'prog-mode-hook #'centered-cursor-mode)
+  (add-hook 'eww-mode-hook #'centered-cursor-mode)
   )
 
 ;; Do not write anything past this comment. This is where Emacs will
@@ -568,7 +542,7 @@ This function is called at the very end of Spacemacs initialization."
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(helm-gtags ggtags counsel-gtags company-lua lua-mode nyan-mode zenburn-theme zen-and-art-theme yasnippet-snippets xterm-color ws-butler winum white-sand-theme which-key wgrep web-mode web-beautify volatile-highlights vmd-mode vi-tilde-fringe uuidgen use-package unfill underwater-theme ujelly-theme twilight-theme twilight-bright-theme twilight-anti-bright-theme toxi-theme toc-org tao-theme tangotango-theme tango-plus-theme tango-2-theme tagedit symon sunny-day-theme sublime-themes subatomic256-theme subatomic-theme string-inflection spaceline-all-the-icons spacegray-theme soothe-theme solarized-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme smex smeargle slim-mode shell-pop seti-theme scss-mode sass-mode reverse-theme restart-emacs request rebecca-theme rainbow-delimiters railscasts-theme purple-haze-theme pug-mode protobuf-mode professional-theme popwin planet-theme phoenix-dark-pink-theme phoenix-dark-mono-theme persp-mode pcre2el password-generator paradox overseer orgit organic-green-theme org-projectile org-present org-pomodoro org-mime org-download org-bullets org-brain open-junk-file omtose-phellack-theme oldlace-theme occidental-theme obsidian-theme noctilux-theme neotree naquadah-theme nameless mwim mustang-theme multi-term move-text monokai-theme monochrome-theme molokai-theme moe-theme mmm-mode minimal-theme material-theme markdown-toc majapahit-theme magit-svn magit-gitflow madhat2r-theme macrostep lush-theme lorem-ipsum link-hint light-soap-theme kaolin-themes jbeans-theme jazz-theme ivy-yasnippet ivy-xref ivy-purpose ivy-hydra ir-black-theme inkpot-theme indent-guide impatient-mode hungry-delete hl-todo highlight-parentheses highlight-numbers highlight-indentation heroku-theme hemisu-theme helm-make hc-zenburn-theme gruvbox-theme gruber-darker-theme grandshell-theme gotham-theme google-translate golden-ratio godoctor go-tag go-rename go-impl go-guru go-gen-test go-fill-struct go-eldoc gnuplot gitignore-templates gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link gh-md gandalf-theme fuzzy font-lock+ flycheck-posframe flycheck-pos-tip flx-ido flatui-theme flatland-theme fill-column-indicator farmhouse-theme fancy-battery eziam-theme eyebrowse expand-region exotica-theme exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-org evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-cleverparens evil-args evil-anzu eval-sexp-fu espresso-theme eshell-z eshell-prompt-extras esh-help emmet-mode elisp-slime-nav editorconfig dumb-jump dracula-theme dotenv-mode doom-themes django-theme diminish define-word darktooth-theme darkokai-theme darkmine-theme darkburn-theme dakrone-theme cyberpunk-theme counsel-projectile counsel-css company-web company-statistics company-go column-enforce-mode color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized clues-theme clean-aindent-mode cherry-blossom-theme centered-cursor-mode busybee-theme bubbleberry-theme birds-of-paradise-plus-theme beacon badwolf-theme auto-yasnippet auto-highlight-symbol auto-compile apropospriate-theme anti-zenburn-theme ample-zen-theme ample-theme all-the-icons-dired alect-themes aggressive-indent afternoon-theme ace-window ace-link ac-ispell)))
+   '(shr-tag-pre-highlight language-detection youdao-dictionary yasnippet-snippets yapfify xterm-color ws-butler winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package toml-mode toc-org symon string-inflection spray spaceline-all-the-icons smeargle shell-pop restclient-helm restart-emacs ranger rainbow-delimiters racer pyvenv pytest pyim pyenv-mode py-isort popwin pippel pipenv pip-requirements persp-mode pcre2el password-generator paradox pangu-spacing overseer org-plus-contrib org-bullets open-junk-file ob-restclient ob-http neotree nameless multi-term move-text mmm-mode markdown-toc magit-svn magit-gitflow macrostep lorem-ipsum live-py-mode link-hint indent-guide importmagic ibuffer-projectile hungry-delete hl-todo highlight-parentheses highlight-numbers highlight-indentation helm-xref helm-themes helm-swoop helm-pydoc helm-purpose helm-projectile helm-mode-manager helm-make helm-gitignore helm-flx helm-descbinds helm-dash helm-company helm-c-yasnippet helm-ag google-translate golden-ratio godoctor go-tag go-rename go-impl go-guru go-gen-test go-fill-struct go-eldoc gitignore-templates gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gh-md fuzzy font-lock+ flycheck-rust flycheck-pos-tip flx-ido find-by-pinyin-dired fill-column-indicator fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-cleverparens evil-args evil-anzu eval-sexp-fu eshell-z eshell-prompt-extras esh-help elisp-slime-nav editorconfig dumb-jump dotenv-mode diminish diff-hl define-word cython-mode counsel-projectile company-statistics company-restclient company-go company-anaconda column-enforce-mode clean-aindent-mode centered-cursor-mode cargo browse-at-remote auto-yasnippet auto-highlight-symbol auto-compile atom-one-dark-theme aggressive-indent ace-window ace-pinyin ace-link ace-jump-helm-line ac-ispell)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
