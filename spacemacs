@@ -19,7 +19,7 @@ This function should only modify configuration layer settings."
    ;; listed in `dotspacemacs-configuration-layers'. `nil' disable the lazy
    ;; installation feature and you have to explicitly list a layer in the
    ;; variable `dotspacemacs-configuration-layers' to install it.
-   ;; (default 'unused)
+   (default 'unused)
    dotspacemacs-enable-lazy-installation 'unused
 
    ;; If non-nil then Spacemacs will ask for confirmation before installing
@@ -55,7 +55,7 @@ This function should only modify configuration layer settings."
               ranger-width-preview 0.4
               ranger-ignored-extensions '("mkv" "iso" "mp4")
               ranger-max-preview-size 10)
-     colors
+     (colors :variables colors-enable-nyan-cat-progress-bar t)
      imenu-list
      (ibuffer :variables ibuffer-group-buffers-by 'projects)
      (helm :variables )
@@ -516,6 +516,9 @@ before packages are loaded."
     (setq dired-use-ls-dired nil))
   ;; spaceline
   (spaceline-toggle-minor-modes-off)
+  (spaceline-toggle-nyan-cat-off)
+  (spaceline-toggle-buffer-size-off)
+  (setq auto-revert-check-vc-info t)
 
   ;; projectile
   (setq projectile-enable-caching t)
