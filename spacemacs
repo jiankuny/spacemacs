@@ -19,7 +19,7 @@ This function should only modify configuration layer settings."
    ;; listed in `dotspacemacs-configuration-layers'. `nil' disable the lazy
    ;; installation feature and you have to explicitly list a layer in the
    ;; variable `dotspacemacs-configuration-layers' to install it.
-   (default 'unused)
+   ;; (default 'unused)
    dotspacemacs-enable-lazy-installation 'unused
 
    ;; If non-nil then Spacemacs will ask for confirmation before installing
@@ -46,7 +46,6 @@ This function should only modify configuration layer settings."
             shell-default-full-span nil
             shell-default-height 25
             shell-default-position 'bottom)
-     speed-reading
      restclient
      (ranger :variables
               ranger-show-preview t
@@ -93,6 +92,7 @@ This function should only modify configuration layer settings."
    ;; '(your-package :location "~/path/to/your-package/")
    ;; Also include the dependencies as they will not be resolved automatically.
    dotspacemacs-additional-packages '(
+                                      flycheck-posframe
                                       mwim
                                       atom-one-dark-theme)
 
@@ -193,7 +193,7 @@ It should only modify the values of Spacemacs settings."
    ;; directory. A string value must be a path to an image format supported
    ;; by your Emacs build.
    ;; If the value is nil then no banner is displayed. (default 'official)
-   dotspacemacs-startup-banner 'random
+   dotspacemacs-startup-banner 'official
 
    ;; List of items to show in startup buffer or an association list of
    ;; the form `(list-type . list-size)`. If nil then it is disabled.
@@ -208,7 +208,7 @@ It should only modify the values of Spacemacs settings."
    dotspacemacs-startup-buffer-responsive t
 
    ;; Default major mode of the scratch buffer (default `text-mode')
-   dotspacemacs-scratch-mode 'text-mode
+   dotspacemacs-scratch-mode 'emacs-lisp-mode
 
    ;; Initial message in the scratch buffer, such as "Welcome to Spacemacs!"
    ;; (default nil)
@@ -511,6 +511,10 @@ This function is called at the very end of Spacemacs startup, after layer
 configuration.
 Put your configuration code here, except for variables that should be set
 before packages are loaded."
+
+  (setq flycheck-highlighting-mode 'lines)
+  (setq flycheck-display-errors-delay 0.1)
+  (add-hook 'flycheck-mode-hook #'flycheck-posframe-mode)
   ;; dired
   (when (string= system-type "darwin")
     (setq dired-use-ls-dired nil))
@@ -545,6 +549,7 @@ before packages are loaded."
 
   (add-hook 'prog-mode-hook #'centered-cursor-mode)
   (add-hook 'eww-mode-hook #'centered-cursor-mode)
+  (setq helm-dash-browser-func 'eww)
   )
 
 ;; Do not write anything past this comment. This is where Emacs will
