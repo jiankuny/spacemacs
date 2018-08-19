@@ -19,7 +19,7 @@ This function should only modify configuration layer settings."
    ;; listed in `dotspacemacs-configuration-layers'. `nil' disable the lazy
    ;; installation feature and you have to explicitly list a layer in the
    ;; variable `dotspacemacs-configuration-layers' to install it.
-   (default 'unused)
+   ;; (default 'unused)
    dotspacemacs-enable-lazy-installation 'unused
 
    ;; If non-nil then Spacemacs will ask for confirmation before installing
@@ -33,7 +33,7 @@ This function should only modify configuration layer settings."
 
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
-   '(
+   '(html
      ;; ----------------------------------------------------------------
      ;; Example of useful layers you may want to use right away.
      ;; Uncomment some layer names and press `SPC f e R' (Vim style) or
@@ -46,7 +46,6 @@ This function should only modify configuration layer settings."
             shell-default-full-span nil
             shell-default-height 25
             shell-default-position 'bottom)
-     speed-reading
      restclient
      (ranger :variables
               ranger-show-preview t
@@ -77,7 +76,11 @@ This function should only modify configuration layer settings."
      markdown
      (neotree :variables neo-theme 'icons
               neo-vc-integration '(char))
-     ;; org
+     (latex :variables latex-build-command "LaTeX")
+     org
+     ;; org 导出 pdf在org文件前加上
+     ;; #+LATEX_HEADER: \usepackage{ctex}
+     ;; #+LATEX_COMPILER: xelatex
      ;; spell-checking
      syntax-checking
      (version-control :variables
@@ -93,6 +96,7 @@ This function should only modify configuration layer settings."
    ;; '(your-package :location "~/path/to/your-package/")
    ;; Also include the dependencies as they will not be resolved automatically.
    dotspacemacs-additional-packages '(
+                                      flycheck-posframe
                                       mwim
                                       atom-one-dark-theme)
 
@@ -193,7 +197,7 @@ It should only modify the values of Spacemacs settings."
    ;; directory. A string value must be a path to an image format supported
    ;; by your Emacs build.
    ;; If the value is nil then no banner is displayed. (default 'official)
-   dotspacemacs-startup-banner 'random
+   dotspacemacs-startup-banner 'official
 
    ;; List of items to show in startup buffer or an association list of
    ;; the form `(list-type . list-size)`. If nil then it is disabled.
@@ -208,7 +212,7 @@ It should only modify the values of Spacemacs settings."
    dotspacemacs-startup-buffer-responsive t
 
    ;; Default major mode of the scratch buffer (default `text-mode')
-   dotspacemacs-scratch-mode 'text-mode
+   dotspacemacs-scratch-mode 'emacs-lisp-mode
 
    ;; Initial message in the scratch buffer, such as "Welcome to Spacemacs!"
    ;; (default nil)
@@ -511,6 +515,21 @@ This function is called at the very end of Spacemacs startup, after layer
 configuration.
 Put your configuration code here, except for variables that should be set
 before packages are loaded."
+  ;;LaTeX config
+  (add-hook 'LaTeX-mode-hook
+            (lambda ()
+              (setq TeX-auto-untabify t     ; remove all tabs before saving
+                    TeX-engine 'xetex       ; use xelatex default
+                    ;; display compilation windows
+                    ;; TeX-show-compilation t
+                    )
+              (TeX-global-PDF-mode t)       ; PDF mode enable, not plain
+              (setq TeX-save-query nil)
+              (imenu-add-menubar-index)
+              (define-key LaTeX-mode-map (kbd "TAB") 'TeX-complete-symbol)))
+  (setq flycheck-highlighting-mode 'lines)
+  (setq flycheck-display-errors-delay 0.1)
+  (add-hook 'flycheck-mode-hook #'flycheck-posframe-mode)
   ;; dired
   (when (string= system-type "darwin")
     (setq dired-use-ls-dired nil))
@@ -545,6 +564,7 @@ before packages are loaded."
 
   (add-hook 'prog-mode-hook #'centered-cursor-mode)
   (add-hook 'eww-mode-hook #'centered-cursor-mode)
+  (setq helm-dash-browser-func 'eww)
   )
 
 ;; Do not write anything past this comment. This is where Emacs will
@@ -560,7 +580,7 @@ This function is called at the very end of Spacemacs initialization."
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(dash-at-point rainbow-mode rainbow-identifiers color-identifiers-mode mwim shr-tag-pre-highlight language-detection youdao-dictionary yasnippet-snippets yapfify xterm-color ws-butler winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package toml-mode toc-org symon string-inflection spray spaceline-all-the-icons smeargle shell-pop restclient-helm restart-emacs ranger rainbow-delimiters racer pyvenv pytest pyim pyenv-mode py-isort popwin pippel pipenv pip-requirements persp-mode pcre2el password-generator paradox pangu-spacing overseer org-plus-contrib org-bullets open-junk-file ob-restclient ob-http neotree nameless multi-term move-text mmm-mode markdown-toc magit-svn magit-gitflow macrostep lorem-ipsum live-py-mode link-hint indent-guide importmagic ibuffer-projectile hungry-delete hl-todo highlight-parentheses highlight-numbers highlight-indentation helm-xref helm-themes helm-swoop helm-pydoc helm-purpose helm-projectile helm-mode-manager helm-make helm-gitignore helm-flx helm-descbinds helm-dash helm-company helm-c-yasnippet helm-ag google-translate golden-ratio godoctor go-tag go-rename go-impl go-guru go-gen-test go-fill-struct go-eldoc gitignore-templates gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gh-md fuzzy font-lock+ flycheck-rust flycheck-pos-tip flx-ido find-by-pinyin-dired fill-column-indicator fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-cleverparens evil-args evil-anzu eval-sexp-fu eshell-z eshell-prompt-extras esh-help elisp-slime-nav editorconfig dumb-jump dotenv-mode diminish diff-hl define-word cython-mode counsel-projectile company-statistics company-restclient company-go company-anaconda column-enforce-mode clean-aindent-mode centered-cursor-mode cargo browse-at-remote auto-yasnippet auto-highlight-symbol auto-compile atom-one-dark-theme aggressive-indent ace-window ace-pinyin ace-link ace-jump-helm-line ac-ispell)))
+   '(web-mode web-beautify tagedit slim-mode scss-mode sass-mode pug-mode impatient-mode simple-httpd helm-css-scss haml-mode emmet-mode counsel-css company-web web-completion-data add-node-modules-path company-auctex auctex orgit org-projectile org-category-capture org-present org-pomodoro alert log4e gntp org-mime org-download org-brain htmlize gnuplot evil-org shr-tag-pre-highlight language-detection flycheck-posframe posframe youdao-dictionary yasnippet-snippets yapfify xterm-color ws-butler winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package toml-mode toc-org symon string-inflection spaceline-all-the-icons smeargle shell-pop restclient-helm restart-emacs ranger rainbow-mode rainbow-identifiers rainbow-delimiters racer pyvenv pytest pyim pyenv-mode py-isort popwin pippel pipenv pip-requirements persp-mode pcre2el password-generator paradox pangu-spacing overseer org-plus-contrib org-bullets open-junk-file ob-restclient ob-http neotree nameless mwim multi-term move-text mmm-mode markdown-toc magit-svn magit-gitflow macrostep lorem-ipsum live-py-mode link-hint indent-guide importmagic ibuffer-projectile hungry-delete hl-todo highlight-parentheses highlight-numbers highlight-indentation helm-xref helm-themes helm-swoop helm-pydoc helm-purpose helm-projectile helm-mode-manager helm-make helm-gitignore helm-flx helm-descbinds helm-dash helm-company helm-c-yasnippet helm-ag google-translate golden-ratio godoctor go-tag go-rename go-impl go-guru go-gen-test go-fill-struct go-eldoc gitignore-templates gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gh-md fuzzy font-lock+ flycheck-rust flycheck-pos-tip flx-ido find-by-pinyin-dired fill-column-indicator fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-cleverparens evil-args evil-anzu eval-sexp-fu eshell-z eshell-prompt-extras esh-help elisp-slime-nav editorconfig dumb-jump dotenv-mode diminish diff-hl define-word dash-at-point cython-mode counsel-projectile company-statistics company-restclient company-go company-anaconda column-enforce-mode color-identifiers-mode clean-aindent-mode centered-cursor-mode cargo browse-at-remote auto-yasnippet auto-highlight-symbol auto-compile atom-one-dark-theme aggressive-indent ace-window ace-pinyin ace-link ace-jump-helm-line ac-ispell)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
